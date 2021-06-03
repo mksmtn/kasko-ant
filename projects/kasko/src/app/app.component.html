@@ -1,0 +1,99 @@
+<form nz-form nzLayout="vertical" [formGroup]="form">
+  <h3>
+    Регион регистрации
+  </h3>
+  <nz-form-item>
+      <nz-form-label>Ваш регион</nz-form-label>
+      <nz-select
+        (nzOnSearch)="onSearch($event)"
+        [ngSwitch]="isLoadingRegions$ | async"
+        nzShowSearch
+        nzServerSearch
+        formControlName="region"
+      >
+        <ng-container *ngSwitchCase="true">
+          Загрузка...
+        </ng-container>
+        <ng-container *ngSwitchCase="false">
+          <nz-option *ngFor="let region of regions$ | async" [nzLabel]="region.name" [nzValue]="region.id"></nz-option>
+        </ng-container>
+      </nz-select>
+  </nz-form-item>
+  <h3>
+    У вас есть предыдущий полис Каско?
+  </h3>
+  <nz-radio-group formControlName="alreadyHasPolicy">
+    <label nz-radio [nzValue]="true">
+      Да
+    </label>
+    <label nz-radio [nzValue]="false">
+      Нет
+    </label>
+  </nz-radio-group>
+  <div *ngIf="alreadyHasPolicyControl.value">
+    <h4>Тип предыдущего полиса</h4>
+    <nz-radio-group formControlName="existingPolicyType">
+      <label nz-radio [nzValue]="PolicyType.Other">
+        Полис другой страховой компании
+      </label>
+      <label nz-radio [nzValue]="PolicyType.VSK">
+        Полис ВСК
+      </label>
+    </nz-radio-group>
+  </div>
+  <h3>Транспортное средство</h3>
+  <nz-form-item>
+    <nz-form-label>Госномер</nz-form-label>
+    <div class="gov-number__form">
+      <div>
+        <nz-form-control>
+          <input nz-input type="text">
+        </nz-form-control>  
+      </div>
+      <div>
+        <button nz-button nzType="primary" type="button">Найти</button>
+      </div>  
+    </div>
+  </nz-form-item>
+  <h3>Водители</h3>
+  <div>
+    <label nz-checkbox formControlName="isPolicyOpen">
+      Без ограничения количества водителей
+    </label>
+  </div>
+  <div *ngIf="!isPolicyOpenControl.value" formArrayName="drivers">
+    <ng-container *ngFor="let driverControl of driversControl.controls; index as i" [formGroup]="$any(driverControl)">
+      Водитель #{{ i }}
+      <div class="driver__dates">
+        <nz-form-item>
+          <nz-form-label>Дата рождения</nz-form-label>
+          <nz-date-picker formControlName="birthDate" nzFormat="dd.MM.yyyy"></nz-date-picker>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Дата начала стажа</nz-form-label>
+          <nz-date-picker formControlName="drivingStartDate" nzFormat="dd.MM.yyyy"></nz-date-picker>
+        </nz-form-item>
+      </div>
+      <div>
+        <label nz-checkbox formControlName="isMarried">Состоит в браке</label>
+      </div>
+    </ng-container>
+    <button (click)="addDriver()" nz-button nzType="default" type="button">
+      Добавить еще водителя
+    </button>
+    <h3>Противоугонная система</h3>
+    <div class="anti-hijack-system__selects">
+      <nz-form-item>
+        <nz-form-label>Марка</nz-form-label>
+        <nz-select></nz-select>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Модель</nz-form-label>
+        <nz-select></nz-select>
+      </nz-form-item>
+    </div>
+  </div>
+  <button nz-button nzType="primary">
+    Рассчитать стоимость и выбрать условия
+  </button>
+</form>
